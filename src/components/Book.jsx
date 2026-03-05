@@ -3,6 +3,7 @@ import {
   Bone,
   BoxGeometry,
   Float32BufferAttribute,
+  MathUtils,
   MeshStandardMaterial,
   Skeleton,
   SkinnedMesh,
@@ -15,6 +16,9 @@ import { useHelper, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { degToRad } from "three/src/math/MathUtils.js";
+
+
+const lerpFactor = 0.05;
 
 const PAGE_WIDTH = 1.28;
 const PAGE_HEIGHT = 1.71;
@@ -138,7 +142,7 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
         targetRotation += degToRad(number * 0.8);
     }
     const bones = skinnedMeshRef.current.skeleton.bones;
-    bones[0].rotation.y = targetRotation;
+    bones[0].rotation.y = MathUtils.lerp(bones[0].rotation.y, targetRotation, lerpFactor);
   });
 
   return (
