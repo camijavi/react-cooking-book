@@ -71,6 +71,12 @@ const pageMaterials = [
   }),
 ];
 
+pages.forEach ((page) => {
+    useTexture.preload(`/textures/${page.front}.png`);
+    useTexture.preload(`/textures/${page.back}.jpg`);
+})
+
+
 const Page = ({ number, front, back, ...props }) => {
   const [picture, picture2] = useTexture([
     `/textures/${front}.png`,
