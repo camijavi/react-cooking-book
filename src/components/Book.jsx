@@ -10,9 +10,10 @@ import {
   Uint16BufferAttribute,
   Vector3,
 } from "three";
-import { pages } from "./UI";
+import { pageAtom, pages } from "./UI";
 import { useHelper, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { useAtom } from "jotai";
 
 const PAGE_WIDTH = 1.28;
 const PAGE_HEIGHT = 1.71;
@@ -71,15 +72,14 @@ const pageMaterials = [
   }),
 ];
 
-pages.forEach ((page) => {
-    useTexture.preload(`/textures/${page.front}.png`);
-    useTexture.preload(`/textures/${page.back}.jpg`);
-})
+pages.forEach((page) => {
+  useTexture.preload(`/textures/${page.front}.jpg`);
+  useTexture.preload(`/textures/${page.back}.jpg`);
+});
 
-
-const Page = ({ number, front, back, ...props }) => {
+const Page = ({ number, front, back, page, ...props }) => {
   const [picture, picture2] = useTexture([
-    `/textures/${front}.png`,
+    `/textures/${front}.jpg`,
     `/textures/${back}.jpg`,
   ]);
 
@@ -136,24 +136,28 @@ const Page = ({ number, front, back, ...props }) => {
 
   return (
     <group {...props}>
-      <primitive object={manualSkinnedMesh} ref={skinnedMeshRef} />
+      <primitive
+        object={manualSkinnedMesh}
+        ref={skinnedMeshRef}
+        position-z={-number * PAGE_DEPTH + page * PAGE_DEPTH}
+      />
     </group>
   );
 };
 
 export const Book = ({ ...props }) => {
+  const [page, setPage] = useAtom(pageAtom);
+
   return (
     <group {...props}>
-      {[...pages].map((pageData, index) =>
-        index === 0 ? (
-          <Page
-            position={[0, 0, index * 0.42]}
-            key={index}
-            number={index}
-            {...pageData}
-          />
-        ) : null
-      )}
+      {[...pages].map((pageData, index) => (
+        <Page 
+          key={index}
+          page={page}
+          number={index}
+          {...pageData}
+        />
+      ))}
     </group>
   );
 };
