@@ -6,6 +6,7 @@ import {
   MeshStandardMaterial,
   Skeleton,
   SkinnedMesh,
+  SRGBColorSpace,
   Uint16BufferAttribute,
   Vector3,
 } from "three";
@@ -71,13 +72,12 @@ const pageMaterials = [
 ];
 
 const Page = ({ number, front, back, ...props }) => {
-  const [picture,picture2,pictureRoughness] = useTexture([
+  const [picture, picture2] = useTexture([
     `/textures/${front}.png`,
     `/textures/${back}.jpg`,
-    ...(number === 0 || number === pages.length
-      ? [`/textures/book-cover-roughness.jpg`]
-      : []),
   ]);
+
+  picture.colorSpace = picture2.colorSpace = SRGBColorSpace;
   const group = useRef();
 
   const skinnedMeshRef = useRef();
@@ -98,26 +98,16 @@ const Page = ({ number, front, back, ...props }) => {
     const materials = [
       ...pageMaterials,
       new MeshStandardMaterial({
-        color: "white",
+        color: number === 0 ? "#b8b8b8" : "white",
         map: picture,
-        ...(number === 0
-          ? {
-              roughnessMap: pictureRoughness,
-            }
-          : {
-              roughness: 0.1,
-            }),
+        roughness: number === 0 ? 0.7 : 0.1,
+        metalness: 0,
       }),
       new MeshStandardMaterial({
         color: "white",
         map: picture2,
-        ...(number === pages.length - 1
-          ? {
-              roughnessMap: pictureRoughness,
-            }
-          : {
-              roughness: 0.1,
-            }),
+        roughness: number === pages.length - 1 ? 0.7 : 0.1,
+        metalness: 0,
       }),
     ];
     const mesh = new SkinnedMesh(pageGeometry, materials);
@@ -127,7 +117,7 @@ const Page = ({ number, front, back, ...props }) => {
     mesh.add(skeleton.bones[0]);
     mesh.bind(skeleton);
     return mesh;
-  }, [number, picture, picture2, pictureRoughness]);
+  }, [number, picture, picture2]);
 
   //   useHelper(skinnedMeshRef, SkeletonHelper, "cyan");
 
