@@ -14,6 +14,7 @@ import { pageAtom, pages } from "./UI";
 import { useHelper, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useAtom } from "jotai";
+import { degToRad } from "three/src/math/MathUtils.js";
 
 const PAGE_WIDTH = 1.28;
 const PAGE_HEIGHT = 1.71;
@@ -77,7 +78,7 @@ pages.forEach((page) => {
   useTexture.preload(`/textures/${page.back}.jpg`);
 });
 
-const Page = ({ number, front, back, page, ...props }) => {
+const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
   const [picture, picture2] = useTexture([
     `/textures/${front}.jpg`,
     `/textures/${back}.jpg`,
@@ -131,7 +132,13 @@ const Page = ({ number, front, back, page, ...props }) => {
     if (!skinnedMeshRef.current) {
       return;
     }
+
+    let targetRotation = opened ? -Math.PI / 2 : Math.PI / 2;
+    if (!bookClosed){
+        targetRotation += degToRad(number * 0.8);
+    }
     const bones = skinnedMeshRef.current.skeleton.bones;
+    bones[0].rotation.y = targetRotation;
   });
 
   return (
@@ -149,13 +156,15 @@ export const Book = ({ ...props }) => {
   const [page, setPage] = useAtom(pageAtom);
 
   return (
-    <group {...props}>
+    <group {...props} rotation-y ={-Math.PI / 2}>
       {[...pages].map((pageData, index) => (
         <Page 
           key={index}
           page={page}
           number={index}
           {...pageData}
+          bookClosed={page === 0 || page === pages.lenght} 
+          opened={page > index}
         />
       ))}
     </group>
