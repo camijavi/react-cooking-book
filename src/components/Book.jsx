@@ -17,7 +17,6 @@ import { useFrame } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { degToRad } from "three/src/math/MathUtils.js";
 
-
 const lerpFactor = 0.05;
 
 const PAGE_WIDTH = 1.28;
@@ -78,14 +77,14 @@ const pageMaterials = [
 ];
 
 pages.forEach((page) => {
-  useTexture.preload(`/textures/${page.front}.jpg`);
-  useTexture.preload(`/textures/${page.back}.jpg`);
+  useTexture.preload(`/textures/${page.front}`);
+  useTexture.preload(`/textures/${page.back}`);
 });
 
 const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
   const [picture, picture2] = useTexture([
-    `/textures/${front}.jpg`,
-    `/textures/${back}.jpg`,
+    `/textures/${front}`,
+    `/textures/${back}`,
   ]);
 
   picture.colorSpace = picture2.colorSpace = SRGBColorSpace;
@@ -138,11 +137,15 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
     }
 
     let targetRotation = opened ? -Math.PI / 2 : Math.PI / 2;
-    if (!bookClosed){
-        targetRotation += degToRad(number * 0.8);
+    if (!bookClosed) {
+      targetRotation += degToRad(number * 0.8);
     }
     const bones = skinnedMeshRef.current.skeleton.bones;
-    bones[0].rotation.y = MathUtils.lerp(bones[0].rotation.y, targetRotation, lerpFactor);
+    bones[0].rotation.y = MathUtils.lerp(
+      bones[0].rotation.y,
+      targetRotation,
+      lerpFactor
+    );
   });
 
   return (
@@ -160,14 +163,14 @@ export const Book = ({ ...props }) => {
   const [page, setPage] = useAtom(pageAtom);
 
   return (
-    <group {...props} rotation-y ={-Math.PI / 2}>
+    <group {...props} rotation-y={-Math.PI / 2}>
       {[...pages].map((pageData, index) => (
-        <Page 
+        <Page
           key={index}
           page={page}
           number={index}
           {...pageData}
-          bookClosed={page === 0 || page === pages.lenght} 
+          bookClosed={page === 0 || page === pages.lenght}
           opened={page > index}
         />
       ))}

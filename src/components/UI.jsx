@@ -1,41 +1,23 @@
 import { atom, useAtom } from "jotai";
 
+// Ordered list of texture filenames in public/textures (cover, pages 2–39, back)
 const pictures = [
-  "DSC00680",
-  "DSC00933",
-  "DSC00966",
-  "DSC00983",
-  "DSC01011",
-  "DSC01040",
-  "DSC01064",
-  "DSC01071",
-  "DSC01103",
-  "DSC01145",
-  "DSC01420",
-  "DSC01461",
-  "DSC01489",
-  "DSC02031",
-  "DSC02064",
-  "DSC02069",
+  "book-cover.png",
+  ...Array.from({ length: 38 }, (_, i) => `${i + 2}.png`),
+  "book-back.png",
 ];
 
 export const pageAtom = atom(0);
-export const pages = [
-  {
-    front: "book-cover",
-    back: pictures[0],
-  },
-];
-for (let i = 1; i < pictures.length - 1; i += 2) {
+export const pages = [{ front: pictures[0], back: pictures[1] }];
+for (let i = 2; i < pictures.length - 1; i += 2) {
   pages.push({
-    front: pictures[i % pictures.length],
-    back: pictures[(i + 1) % pictures.length],
+    front: pictures[i],
+    back: pictures[i + 1],
   });
 }
-
 pages.push({
-  front: pictures[pictures.length - 1],
-  back: "book-back",
+  front: pictures[pictures.length - 2],
+  back: pictures[pictures.length - 1],
 });
 
 export const UI = () => {
@@ -47,9 +29,7 @@ export const UI = () => {
         <a
           className="pointer-events-auto mt-10 ml-10"
           // href="https://lessons.wawasensei.dev/courses/react-three-fiber"
-        >
-          
-        </a>
+        ></a>
         <div className="w-full overflow-auto pointer-events-auto flex justify-center">
           <div className="overflow-auto flex items-center gap-4 max-w-full p-10">
             {[...pages].map((_, index) => (
@@ -78,8 +58,6 @@ export const UI = () => {
           </div>
         </div>
       </main>
-
-      
     </>
   );
 };
