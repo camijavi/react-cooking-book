@@ -71,8 +71,8 @@ const pageMaterials = [
 ];
 
 const Page = ({ number, front, back, ...props }) => {
-  const [picture, pictureRoughness, picture2] = useTexture([
-    `/textures/${front}.jpg`,
+  const [picture,picture2,pictureRoughness] = useTexture([
+    `/textures/${front}.png`,
     `/textures/${back}.jpg`,
     ...(number === 0 || number === pages.length
       ? [`/textures/book-cover-roughness.jpg`]
